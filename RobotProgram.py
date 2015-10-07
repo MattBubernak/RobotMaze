@@ -13,7 +13,7 @@
 # 					  ...
 #                     ROO
 #                     .OT
-# Usage: ./RobotProgram.py [input.txt]
+# Usage: (cmd to run python may vary...) py RobotProgram.py [input.txt]
 
 import os.path
 import sys
@@ -32,7 +32,9 @@ class Grid:
 		self.gridArr = {} 
 		# We will find this when we load a grid.
 		self.robotX = -1   
-		self.robotY = -1 
+		self.robotY = -1
+		self.targetX = -1   
+		self.targetY = -1  
 		# Used for incramenting
 		i = 0
 		j = 0
@@ -46,10 +48,20 @@ class Grid:
 				if (char.lower() == 'r'):
 					self.robotX = j
 					self.robotY = i
+				elif (char.lower() == 't'):
+					self.targetX = j
+					self.targetY = i
 				j+=1
 
 			# Apply appropriate operations to i/j before the next line is read. 
 			i += 1
+
+	def validGrid(self):
+		if (self.robotX != -1 and self.robotY != -1 and self.targetX != -1   
+		and self.targetY != -1):
+			return True
+		else: 
+			return False  
 
 	def validLocation(self,x,y):
 		if (y,x) in self.gridArr:
@@ -88,7 +100,11 @@ class Solver:
 			return (solveUp or solveDown or solveLeft or solveRight)
 
 	def solveGrid(self,grid):
-		return self.solveRecurse(grid,grid.robotX,grid.robotY) 
+		if (grid.validGrid() != True): 
+			print("Grid is invalid(Missing either a robot or target)")
+			return False
+		else:
+			return self.solveRecurse(grid,grid.robotX,grid.robotY) 
 
 def main(): 
 	# The 'solver' that we will load with a grid, and asked to solve it. 
@@ -98,6 +114,7 @@ def main():
 	if (len(sys.argv) < 2 or len(sys.argv) > 2):
 		print("Usage: ./RobotProgram.py [input.txt]")
 		return
+
 	# If the correct input format was provided
 	else: 
 		inputPath = sys.argv[1]
