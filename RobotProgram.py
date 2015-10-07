@@ -34,51 +34,72 @@ class Grid:
 		self.robotX = -1   
 		self.robotY = -1
 		self.targetX = -1   
-		self.targetY = -1  
+		self.targetY = -1
+		self.invalidChars = False  
 		# Used for incramenting
 		i = 0
 		j = 0
 
 		# Loop through every line. 
 		for line in inputText: 
-			j = 0
 			# Split line into characters, and add them to the gridArr
-			for char in list(line):
-				self.gridArr[i,j] = (GridElem(char.lower()))
+			for char in list(line.rstrip()):
+
+				# Add the gridElem to the grid, if it's a valid character
+				if (char.lower() in ['r','t','.','o']):
+					self.gridArr[i,j] = (GridElem(char.lower()))
+				# Mark that we have found an invalid character otherwise. 
+				else: 
+					self.invalidChars = True
+
+				# Document the location of our robot and target
 				if (char.lower() == 'r'):
 					self.robotX = j
 					self.robotY = i
 				elif (char.lower() == 't'):
 					self.targetX = j
 					self.targetY = i
+
+				# Incrament j(coorelating to the width)
 				j+=1
 
-			# Apply appropriate operations to i/j before the next line is read. 
+			# Apply appropriate modifications to i/j
 			i += 1
+			j = 0
 
+	# Returns whether the grid as a whole is valid. The only concerns we have
+	# are that it contains a robot and a target, and no invalid characters
 	def validGrid(self):
-		if (self.robotX != -1 and self.robotY != -1 and self.targetX != -1   
-		and self.targetY != -1):
+		if ((self.robotX != -1) and (self.robotY != -1) and (self.targetX != -1)   
+		and (self.targetY != -1) and (self.invalidChars == False)):
 			return True
 		else: 
 			return False  
 
+	# Returns whether a given index combination is valid. 
 	def validLocation(self,x,y):
 		if (y,x) in self.gridArr:
 			return True
 		return False
 
+	# Marks a location as visited. 
 	def visitLocation(self,x,y):
 		self.gridArr[y,x].visited = True
 
+	# Gets the value at a location in the array. If it's an invalid index
+	# returns None 
 	def get(self,x,y):
-		return self.gridArr[y,x]
+		if (y,x) in self.gridArr:
+			return self.gridArr[y,x]
+		else: 
+			return None 
 
 class Solver: 
 	def __init__(self):
 		pass
-
+	# Recursive helper function for the solveGrid method. 
 	def solveRecurse(self,grid,x,y):
+		# Verify it's a valid location
 		if (grid.validLocation(x,y) == False):
 			return False
 
@@ -93,15 +114,17 @@ class Solver:
 		# Else try all adjacent locations. 
 		else:
 			grid.visitLocation(x,y)
-			solveUp = self.solveRecurse(grid,x,y+1)
-			solveDown = self.solveRecurse(grid,x,y-1)
+			solveDown = self.solveRecurse(grid,x,y+1)
+			solveUp = self.solveRecurse(grid,x,y-1)
 			solveLeft = self.solveRecurse(grid,x-1,y)
 			solveRight = self.solveRecurse(grid,x+1,y)
 			return (solveUp or solveDown or solveLeft or solveRight)
 
+	# Returns True/False depending on if there is a path between a robot and target
+	# If the grid is invalid, doesn't do this check and outputs to user. 
 	def solveGrid(self,grid):
 		if (grid.validGrid() != True): 
-			print("Grid is invalid(Missing either a robot or target)")
+			print("Grid is invalid.")
 			return False
 		else:
 			return self.solveRecurse(grid,grid.robotX,grid.robotY) 
@@ -134,4 +157,5 @@ def main():
 
 		return
 
+# Call the main logic of this program. 
 main()
