@@ -30,7 +30,7 @@ class Grid:
 	def __init__(self,inputText):
 		# We can store a 2D array as a dictionary.
 		self.gridArr = {} 
-		# We will find this when we load a grid.
+		# We will find this info o9ut when we load a grid.
 		self.robotX = -1   
 		self.robotY = -1
 		self.targetX = -1   
@@ -120,7 +120,7 @@ class Solver:
 			solveRight = self.solveRecurse(grid,x+1,y)
 			return (solveUp or solveDown or solveLeft or solveRight)
 
-	# Returns True/False depending on if there is a path between a robot and target
+	# Returns True/False depending on if there is a path between a calcbot and target
 	# If the grid is invalid, doesn't do this check and outputs to user. 
 	def solveGrid(self,grid):
 		if (grid.validGrid() != True): 
